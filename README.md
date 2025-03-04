@@ -432,13 +432,69 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 
 ### 2. Spark
 - **Objectif** : Réaliser les mêmes tâches (Word Count, Agrégats sur Twitter, Produit matriciel) en utilisant Spark.
+- #### 1.1 Installer Java (requis par Spark) :
+  Spark nécessite Java pour fonctionner. Nous allons installer OpenJDK, une version libre et open-source de Java.
+
 
   ```python
     sudo apt update
-    sudo apt install python3-venv
-    
+    sudo apt install openjdk-11-jdk
     source myenv/bin/activate
     ```
+
+- #### 1.2. Installer Apache Spark :
+  Aller sur la page de téléchargement d'Apache Spark : https://spark.apache.org/downloads.html.  
+  Sélectionner la version la plus récente (par exemple, Spark 3.5.5).
+  
+  ```bash
+    sudo mv spark-3.5.5-bin-hadoop3.tgz /opt
+  ```
+  Extraire le fichier :
+
+  ```bash
+    cd /opt
+    sudo tar -xvzf spark-3.5.5-bin-hadoop3.tgz
+  ```
+- #### 1.3. Configurer les variables d'environnement  :
+  Modifier le fichier .bashrc :
+
+  ```bash
+    nano ~/.bashrc
+  ```
+
+  Ajouter les lignes suivantes à la fin du fichier :
+    
+  ```bash
+    export SPARK_HOME=/opt/spark-3.5.5-bin-hadoop3
+    export PATH=$PATH:$SPARK_HOME/bin
+    export PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
+    export PYSPARK_PYTHON=python
+  ```
+  Enregistrer et fermer le fichier, puis recharger .bashrc :
+
+  ```bash
+   source ~/.bashrc
+  ```
+
+  Vérifier l'installation de Spark :
+
+  ```bash
+   spark-shell --version
+  ```
+- #### 1.4.  Installer PySpark :
+
+  Installer PySpark avec pip :
+
+  ```bash
+   sudo pip3 install pyspark
+  ```
+- #### 1.5. Comment exécuter un script avec spark-submit :
+  
+  Le format général pour exécuter un script avec spark-submit est :
+
+  ```bash
+   spark-submit <script.py> <param1> <param2> ... <paramN>
+  ```
 
 #### 2.1 Word Count avec Spark
 
