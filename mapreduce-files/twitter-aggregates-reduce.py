@@ -18,13 +18,13 @@ for line in sys.stdin:
     elif key == "min_followers":
         user, count = value.split(':')
         count = int(count)
-        if count < min_followers:
+        if count < min_followers or (count == min_followers and user < min_user):
             min_followers = count
             min_user = user
     elif key == "max_followers":
         user, count = value.split(':')
         count = int(count)
-        if count > max_followers:
+        if count > max_followers or (count == max_followers and user < max_user):
             max_followers = count
             max_user = user
 
