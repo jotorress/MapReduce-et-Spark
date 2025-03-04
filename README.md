@@ -207,9 +207,6 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 
 ---
 
-Voici la suite du format demandé pour les exercices, en suivant la même structure :
-
----
 
 ## 1. Exercices
 
@@ -422,7 +419,7 @@ Voici la suite du format demandé pour les exercices, en suivant la même struct
     - `matmul-single-round-map.py` :
       ```python
       #!/usr/bin/env python3
-    # matmul_single_round_map.py
+      #matmul_single_round_map.py
     import sys
     
     for line in sys.stdin:
@@ -442,8 +439,8 @@ Voici la suite du format demandé pour les exercices, en suivant la même struct
       ```
     - `matmul-single-round-reduce.py` :
       ```python
-             #!/usr/bin/env python3
-        # matmul_single_round_reduce.py
+         #!/usr/bin/env python3
+        #matmul_single_round_reduce.py
         import sys
         from collections import defaultdict
         
