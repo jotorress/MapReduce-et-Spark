@@ -529,6 +529,13 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
   ```
 
 #### 2.2 Agrégats sur Twitter avec Spark
+- **Script** : `twitter_analysis_spark.py`
+
+- **Exécution** :
+  ```bash
+  spark-submit twitter_analysis_spark.py social_network.edgelist 
+
+  ```
 
 #### 2.3 Produit matriciel avec Spark
 
