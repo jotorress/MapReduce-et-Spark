@@ -539,7 +539,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 
 #### 2.3 Produit matriciel avec Spark
 - **Script** : `matmul-spark.py`
-- 
+  
 - **Exécution** :
   ```bash
   spark-submit matmul-spark.py input-matmul output-matmul-spark
