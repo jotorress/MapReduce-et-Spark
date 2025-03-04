@@ -65,9 +65,6 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
    -mapper word-count-map.py \
    -reducer word-count-reduce.py
    ```
-
-Voici la suite du format demandé pour les exercices, en suivant la même structure :
-
 ---
 
 ## 1. Exercices
@@ -222,7 +219,7 @@ Voici la suite du format demandé pour les exercices, en suivant la même struct
 #### 2.1 Word Count avec Spark
 submit spark-word-count.py
   ```
-
+  ```
 #### 2.2 Agrégats sur Twitter avec Spark
 
 
