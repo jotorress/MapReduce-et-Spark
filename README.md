@@ -57,7 +57,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
     for word, count in word_counts.items():
         print(f"{word}\t{count}")
     ```
-- **Exécution** :
+- **Exécution directe** :
    ```bash
    hadoop-2.9.1/bin/hadoop jar hadoop-2.9.1/share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
    -input input-word-count \
@@ -65,6 +65,13 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
    -mapper word-count-map.py \
    -reducer word-count-reduce.py
    ```
+- **Exécution avec un script `.sh`** :  
+  Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_word_count.sh` :
+  ```bash
+  chmod +x run_word_count.sh
+  chmod +x *.sh
+  ./run_word_count.sh
+  ``` 
 ---
 
 ### 1.2 Agrégats sur le graphe Twitter
@@ -508,13 +515,5 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 
 ### 3. Conclusion
 Ce projet a permis de mettre en œuvre des tâches de traitement de données massives en utilisant les paradigmes MapReduce et Spark. Les résultats obtenus sont conformes aux attentes et démontrent l'efficacité de ces outils pour le traitement distribué de grandes quantités de données.
-```
-
-### Explications :
-- **Structure** : Chaque exercice est détaillé avec un objectif, les scripts nécessaires, et les commandes d'exécution.
-- **Code** : Les scripts Python sont fournis pour chaque tâche, avec des explications claires.
-- **Exécution** : Les commandes pour exécuter les scripts avec Hadoop ou Spark sont incluses.
-
-Ce document est prêt à être utilisé comme `README.md` pour votre projet. Assurez-vous d'avoir les fichiers d'entrée correctement configurés avant d'exécuter les commandes.
 
 
