@@ -335,34 +335,71 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
     - **Premier Round** : Préparer les données pour le produit matriciel.
       - `matmul-two-rounds-map1.py` :
         ```python
-        #!/usr/bin/env python3
-        import sys
-        
-        for line in sys.stdin:
-            matrix, row, col, value = line.strip().split('|')
-            if matrix == "M":
-         
-                for k in range(1, 5):  
-                    print(f"{row},{k}\tM,{col},{value}")
-            elif matrix == "N":
-         
-                for i in range(1, 4):  
-                    print(f"{i},{col}\tN,{row},{value}")
+            #!/usr/bin/env python3
+            #matmul_two_rounds_map1.py
+            import sys
+            
+            for line in sys.stdin:
+                # Analyser la ligne d'entrée
+                parts = line.strip().split('|')
+                matrix, row, col, value = parts[0], parts[1], parts[2], parts[3]
+                
+                if matrix == "M":
+                    # Pour chaque élément M(i,j), émettre (j, "M,i,value")
+                    # Cela permettra au reducer de faire correspondre avec les éléments de N ayant le même j
+                    print(f"{col}\tM,{row},{value}")
+                elif matrix == "N":
+                    # Pour chaque élément N(j,k), émettre (j, "N,k,value")
+                    print(f"{row}\tN,{col},{value}")
         ```
       - `matmul-two-rounds-reduce1.py` :
         ```python
             #!/usr/bin/env python3
+            #matmul_two_rounds_reduce1.py
             import sys
             from collections import defaultdict
             
-            data = defaultdict(list)
+            current_j = None
+            m_values = []  # Paires (i, value) de la matrice M
+            n_values = []  # Paires (k, value) de la matrice N
             
             for line in sys.stdin:
-                key, value = line.strip().split('\t')
-                data[key].append(value)
+                # Analyser la ligne d'entrée
+                j, data = line.strip().split('\t')
+                
+                # Si nous rencontrons une nouvelle clé de jointure, traiter la précédente
+                if current_j and current_j != j:
+                    # Pour chaque paire d'éléments de M et N ayant le même j,
+                    # émettre un produit partiel avec la clé (i,k)
+                    for m_i, m_val in m_values:
+                        for n_k, n_val in n_values:
+                            # La clé pour le deuxième round sera (i,k)
+                            # La valeur est le produit partiel M(i,j) * N(j,k)
+                            partial_product = float(m_val) * float(n_val)
+                            print(f"{m_i},{n_k}\t{partial_product}")
+                    
+                    # Réinitialiser pour la nouvelle clé de jointure
+                    m_values = []
+                    n_values = []
+                
+                current_j = j
+                
+                # Analyser les données en fonction de la matrice
+                parts = data.split(',')
+                matrix = parts[0]
+                
+                if matrix == "M":
+                    # Stocker (i, value) de M
+                    m_values.append((parts[1], parts[2]))
+                elif matrix == "N":
+                    # Stocker (k, value) de N
+                    n_values.append((parts[1], parts[2]))
             
-            for key, values in data.items():
-                print(f"{key}\t{','.join(values)}")
+            if current_j:
+                for m_i, m_val in m_values:
+                    for n_k, n_val in n_values:
+                        partial_product = float(m_val) * float(n_val)
+                        print(f"{m_i},{n_k}\t{partial_product}")
         ```
       - **Exécution** :
         ```bash
@@ -377,34 +414,62 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       - `matmul-two-rounds-map2.py` :
         ```python
         #!/usr/bin/env python3
+        # matmul_two_rounds_map2.py
         import sys
+        
+        # Le deuxième mapper est un simple mapper d'identité
+        # Il transmet simplement la sortie du premier reducer
         for line in sys.stdin:
-            key, values = line.strip().split('\t')
-            row, col = key.split(',')
-            a_values = []
-            b_values = []
-            for value in values.split(','):
-                matrix, idx, val = value.split(',')
-                if matrix == "A":
-                    a_values.append((idx, val))
-                elif matrix == "B":
-                    b_values.append((idx, val))
-            for a in a_values:
-                for b in b_values:
-                    if a[0] == b[0]:
-                        print(f"{row},{col}\t{int(a[1]) * int(b[1])}")
+            print(line.strip())
+                ```
+              - `matmul-two-rounds-reduce2.py` :
+                ```python
+                #!/usr/bin/env python3
+                import sys
+                from collections import defaultdict
+                result = defaultdict(int)
+                for line in sys.stdin:
+                    key, value = line.strip().split('\t')
+                    result[key] += int(value)
+                for key, value in result.items():
+                    print(f"{key}\t{value}")
+                ```
+              - **Exécution** :
+                ```bash
+                hadoop-2.9.1/bin/hadoop jar hadoop-2.9.1/share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
+                -input matmul-intermediate \
+                -output matmul-final \
+                -mapper matmul-two-rounds-map2.py \
+                -reducer matmul-two-rounds-reduce2.py
         ```
       - `matmul-two-rounds-reduce2.py` :
         ```python
         #!/usr/bin/env python3
+        # matmul_two_rounds_reduce2.py
         import sys
-        from collections import defaultdict
-        result = defaultdict(int)
+        
+        current_key = None
+        sum_value = 0
+        
         for line in sys.stdin:
+            # Analyser la ligne d'entrée
             key, value = line.strip().split('\t')
-            result[key] += int(value)
-        for key, value in result.items():
-            print(f"{key}\t{value}")
+            value = float(value)
+            
+            # Si nous rencontrons une nouvelle clé, afficher la somme pour la clé précédente
+            if current_key and current_key != key:
+                # Analyser la ligne et la colonne de la clé
+                i, k = current_key.split(',')
+                # Afficher dans le format requis : i,k\tvalue (avec un espacement correct)
+                print(f"{i},{k}\t {int(sum_value) if sum_value == int(sum_value) else sum_value}")
+                sum_value = 0
+            
+            current_key = key
+            sum_value += value
+        
+        if current_key:
+            i, k = current_key.split(',')
+            print(f"{i},{k}\t {int(sum_value) if sum_value == int(sum_value) else sum_value}")
         ```
       - **Exécution** :
         ```bash
@@ -414,28 +479,27 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
         -mapper matmul-two-rounds-map2.py \
         -reducer matmul-two-rounds-reduce2.py
         ```
-
   - **Version avec un seul round MapReduce** :
     - `matmul-single-round-map.py` :
       ```python
       #!/usr/bin/env python3
       #matmul_single_round_map.py
-    import sys
-    
-    for line in sys.stdin:
-        # Analyser la ligne d'entrée
-        matrix, i, j, value = line.strip().split('|')
+      import sys
         
-        if matrix == "M":
-            # Pour chaque élément M(i,j), émettre une paire clé-valeur :
-            # clé : j (la dimension commune pour la jointure)
-            # valeur : M,i,j,value (pour identifier que cela provient de la matrice M)
-            print(f"{j}\tM,{i},{j},{value}")
-        elif matrix == "N":
-            # Pour chaque élément N(j,k), émettre une paire clé-valeur :
-            # clé : j (la dimension commune pour la jointure)
-            # valeur : N,j,k,value (pour identifier que cela provient de la matrice N)
-            print(f"{i}\tN,{i},{j},{value}")
+        for line in sys.stdin:
+            # Analyser la ligne d'entrée
+            matrix, i, j, value = line.strip().split('|')
+            
+            if matrix == "M":
+                # Pour chaque élément M(i,j), émettre une paire clé-valeur :
+                # clé : j (la dimension commune pour la jointure)
+                # valeur : M,i,j,value (pour identifier que cela provient de la matrice M)
+                print(f"{j}\tM,{i},{j},{value}")
+            elif matrix == "N":
+                # Pour chaque élément N(j,k), émettre une paire clé-valeur :
+                # clé : j (la dimension commune pour la jointure)
+                # valeur : N,j,k,value (pour identifier que cela provient de la matrice N)
+                print(f"{i}\tN,{i},{j},{value}")
       ```
     - `matmul-single-round-reduce.py` :
       ```python
