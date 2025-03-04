@@ -179,7 +179,12 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       -mapper twitter-aggregates-map.py \
       -reducer twitter-aggregates-reduce.py
       ```
-
+    - **Exécution avec un script `.sh`** :  
+      Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_twitter_aggregates.sh` :
+      ```bash
+      chmod +x *.sh
+     ./run_twitter_aggregates.sh
+      ``` 
 ---
 
 ### 1.3 Produit matriciel
@@ -333,6 +338,13 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
         -mapper matmul-two-rounds-map2.py \
         -reducer matmul-two-rounds-reduce2.py
         ```
+      - **Exécution avec un script `.sh`** :  
+      Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_matmul_two_rounds.sh` :
+      ```bash
+      chmod +x *.sh
+     ./run_matmul_two_rounds.sh
+      ``` 
+  
   - **Version avec un seul round MapReduce** :
     - `matmul-single-round-map.py` :
       ```python
@@ -434,7 +446,12 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       -mapper matmul-single-round-map.py \
       -reducer matmul-single-round-reduce.py
       ```
-
+    - **Exécution avec un script `.sh`** :  
+      Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_matmul_single_round.sh` :
+      ```bash
+      chmod +x *.sh
+     ./run_matmul_single_round.sh
+      ``` 
 ---
 
 ### 2. Spark
