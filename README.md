@@ -183,7 +183,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_twitter_aggregates.sh` :
       ```bash
       chmod +x *.sh
-     ./run_twitter_aggregates.sh
+      ./run_twitter_aggregates.sh
       ``` 
 ---
 
@@ -342,7 +342,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_matmul_two_rounds.sh` :
       ```bash
       chmod +x *.sh
-     ./run_matmul_two_rounds.sh
+      ./run_matmul_two_rounds.sh
       ``` 
   
   - **Version avec un seul round MapReduce** :
@@ -450,7 +450,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       Vous pouvez également exécuter cette tâche en utilisant un script `.sh`. Avec le fichier `run_matmul_single_round.sh` :
       ```bash
       chmod +x *.sh
-     ./run_matmul_single_round.sh
+      ./run_matmul_single_round.sh
       ``` 
 ---
 
