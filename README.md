@@ -191,7 +191,14 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 - **Objectif** : Implémenter le produit matriciel en utilisant MapReduce, en deux versions : avec deux rounds MapReduce et avec un seul round.
 - **Scripts** :
   - **Version avec deux rounds MapReduce** :
-    - **Premier Round** : Préparer les données pour le produit matriciel.
+    Cette version divise le calcul en deux étapes :
+    - **Round 1** : Préparer les produits partiels en utilisant les colonnes de M et les lignes de N ayant le même index.
+        - **Mapper** (matmul-two-rounds-map1.py): Transforme les lignes d'entrée en paires clé-valeur basées sur les indices des matrices.
+        - **Reducer**  (matmul-two-rounds-reduce1.py): Combine les paires basées sur la clé commune et génère des produits partiels.
+     
+    - **Round 2** : Agréger ces produits partiels pour obtenir le produit final.
+        - **Mapper** (matmul-two-rounds-map2.py): Transmet simplement les résultats intermédiaires sans transformation.
+        - **Reducer** (matmul-two-rounds-reduce2.py): Additionne les produits partiels pour chaque cellule de la matrice résultante.
       - `matmul-two-rounds-map1.py` :
         ```python
             #!/usr/bin/env python3
@@ -346,6 +353,12 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       ``` 
   
   - **Version avec un seul round MapReduce** :
+    L'idée ici était d'optimiser le processus en combinant la génération des produits partiels et leur agrégation dans un même round :
+    
+    - **Mapper**  (matmul-single-round-map.py): Prépare les données en émettant des paires clé-valeur basées sur les indices partagés entre M et N.
+    - **Reducer**  (matmul-single-round-reduce.py): Calcule directement les produits partiels et les agrège pour chaque cellule cible.
+     
+  
     - `matmul-single-round-map.py` :
       ```python
       #!/usr/bin/env python3
@@ -453,6 +466,15 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       ./run_matmul_single_round.sh
       ``` 
 ---
+
+  - **Décisions techniques et justifications:** :
+    L'idée ici était d'optimiser le processus en combinant la génération des produits partiels et leur agrégation dans un même round :
+    
+    - **Utilisation de defaultdict dans les reducers**  Simplifie le stockage et l'accumulation des produits partiels sans avoir à vérifier l'existence des clés.
+    - **Gestion des clés dans les mappers**  Le choix des clés (j, "M,i,value") et (j, "N,k,value") permet une jointure efficace des éléments partagés.
+    - **Optimisation du tri et des agrégations**  Les reduceByKey sont utilisés au lieu de groupByKey pour réduire le volume des données transférées en réseau.
+    - **Contrôle du format de sortie**  Conversion conditionnelle des flottants en entiers pour assurer que la sortie soit conforme à expected-output-matmul.txt.
+
 
 ### 2. Spark
 - **Objectif** : Réaliser les mêmes tâches (Word Count, Agrégats sur Twitter, Produit matriciel) en utilisant Spark.
