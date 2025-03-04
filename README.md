@@ -433,64 +433,20 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
 ### 2. Spark
 - **Objectif** : Réaliser les mêmes tâches (Word Count, Agrégats sur Twitter, Produit matriciel) en utilisant Spark.
 
-#### 2.1 Word Count avec Spark
-- **Script** : `spark-word-count.py`
   ```python
-  #!/usr/bin/env python3
-  from pyspark import SparkContext
-  sc = SparkContext("local", "Word Count")
-  text_file = sc.textFile("input-word-count")
-  counts = text_file.flatMap(lambda line: line.split(" ")) \
-                    .map(lambda word: (word, 1)) \
-                    .reduceByKey(lambda a, b: a + b)
-  counts.saveAsTextFile("output-word-count-spark")
-  ```
-- **Exécution** :
-  ```bash
-  spark-submit spark-word-count.py
-  ```
+    sudo apt update
+    sudo apt install python3-venv
+    
+    source myenv/bin/activate
+    ```
+
+#### 2.1 Word Count avec Spark
+
 
 #### 2.2 Agrégats sur Twitter avec Spark
-- **Script** : `spark-twitter-aggregates.py`
-  ```python
-  #!/usr/bin/env python3
-  from pyspark import SparkContext
-  sc = SparkContext("local", "Twitter Aggregates")
-  lines = sc.textFile("social_network.edgelist")
-  followers = lines.map(lambda line: line.split()) \
-                   .map(lambda (friend, follower): (friend, 1)) \
-                   .reduceByKey(lambda a, b: a + b)
-  total_users = followers.count()
-  total_relationships = followers.map(lambda (friend, count): count).sum()
-  min_followers = followers.map(lambda (friend, count): count).min()
-  max_followers = followers.map(lambda (friend, count): count).max()
-  print(f"Total Users: {total_users}")
-  print(f"Total Relationships: {total_relationships}")
-  print(f"Min Followers: {min_followers}")
-  print(f"Max Followers: {max_followers}")
-  ```
-- **Exécution** :
-  ```bash
-  spark-submit spark-twitter-aggregates.py
-  ```
 
 #### 2.3 Produit matriciel avec Spark
-- **Script** : `spark-matmul.py`
-  ```python
-  #!/usr/bin/env python3
-  from pyspark import SparkContext
-  sc = SparkContext("local", "Matrix Multiplication")
-  matrix1 = sc.textFile("input-matmul/matrix1.txt").map(lambda line: list(map(int, line.split())))
-  matrix2 = sc.textFile("input-matmul/matrix2.txt").map(lambda line: list(map(int, line.split())))
-  result = matrix1.cartesian(matrix2) \
-                  .map(lambda (row, col): (row, col, sum(a * b for a, b in zip(row, col)))) \
-                  .collect()
-  print(result)
-  ```
-- **Exécution** :
-  ```bash
-  spark-submit spark-matmul.py
-  ```
+
 
 ---
 
