@@ -4,6 +4,7 @@
 
 ## Introduction
 Ce document explique l'utilisation de MapReduce avec Hadoop Streaming et Spark pour traiter de grandes quantités de données.
+**Tous les scripts doivent être exécutés à l'intérieur du dossier `mapreduce-files`.**
 
 ## Préparation de l'environnement (MapReduce)
 ### Installation et configuration de Hadoop
