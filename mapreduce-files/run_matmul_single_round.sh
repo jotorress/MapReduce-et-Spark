@@ -3,7 +3,7 @@
 
 # Variables
 INPUT_FILE="input-matmul"
-FINAL_OUTPUT="matmul-single-final"
+FINAL_OUTPUT="matmul-single-round"
 
 # Supprimer le répertoire de sortie s'il existe
 hadoop-2.9.1/bin/hadoop fs -rm -r $FINAL_OUTPUT
