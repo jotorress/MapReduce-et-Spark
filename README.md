@@ -114,19 +114,24 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
   - **Deuxième Round MapReduce** : Calculer les agrégats sur les résultats du premier round.
     - `twitter-aggregates-map.py` :
       ```python
-      #!/usr/bin/env python3
-      import sys
-      for line in sys.stdin:
-          friend, count = line.strip().split('\t')
-          print(f"total_users\t1")
-          print(f"total_relationships\t{count}")
-          print(f"min_followers\t{count}")
-          print(f"max_followers\t{count}")
+         #!/usr/bin/env python3
+        import sys
+        
+        for line in sys.stdin:
+            friend, count = line.strip().split('\t')
+            count = int(count)
+            
+            print(f"total_users\t1")
+            print(f"total_relationships\t{count}")
+            
+            print(f"min_followers\t{friend}:{count}")
+            print(f"max_followers\t{friend}:{count}")
       ```
     - `twitter-aggregates-reduce.py` :
       ```python
-      #!/usr/bin/env python3
+        #!/usr/bin/env python3
         import sys
+        
         total_users = 0
         total_relationships = 0
         min_followers = float('inf')
@@ -144,19 +149,20 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
             elif key == "min_followers":
                 user, count = value.split(':')
                 count = int(count)
-                if count < min_followers:
+                if count < min_followers or (count == min_followers and user < min_user):
                     min_followers = count
                     min_user = user
             elif key == "max_followers":
                 user, count = value.split(':')
                 count = int(count)
-                if count > max_followers:
+                if count > max_followers or (count == max_followers and user < max_user):
                     max_followers = count
                     max_user = user
-      print(f"nb total de relations friend/follower : {total_relationships}")
-      print(f"nb utilisateurs qui ont au moins un follower : {total_users}")
-      print(f"nb max de followers par utilisateur : {max_followers} ; par exemple utilisateur : {max_user}")
-      print(f"nb min de followers par utilisateur : {min_followers} ; par exemple utilisateur : {min_user}")
+        
+        print(f"nb total de relations friend/follower : {total_relationships}")
+        print(f"nb utilisateurs qui ont au moins un follower : {total_users}")
+        print(f"nb max de followers par utilisateur : {max_followers} ; par exemple utilisateur : {max_user}")
+        print(f"nb min de followers par utilisateur : {min_followers} ; par exemple utilisateur : {min_user}")
       ```
     - **Exécution** :
       ```bash
