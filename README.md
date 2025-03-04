@@ -465,7 +465,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
       chmod +x *.sh
       ./run_matmul_single_round.sh
       ``` 
----
+
 
   - **Décisions techniques et justifications:** :
     L'idée ici était d'optimiser le processus en combinant la génération des produits partiels et leur agrégation dans un même round :
@@ -474,7 +474,7 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
     - **Gestion des clés dans les mappers**  Le choix des clés (j, "M,i,value") et (j, "N,k,value") permet une jointure efficace des éléments partagés.
     - **Optimisation du tri et des agrégations**  Les reduceByKey sont utilisés au lieu de groupByKey pour réduire le volume des données transférées en réseau.
     - **Contrôle du format de sortie**  Conversion conditionnelle des flottants en entiers pour assurer que la sortie soit conforme à expected-output-matmul.txt.
-
+---
 
 ### 2. Spark
 - **Objectif** : Réaliser les mêmes tâches (Word Count, Agrégats sur Twitter, Produit matriciel) en utilisant Spark.
@@ -567,6 +567,22 @@ bin/hadoop jar share/hadoop/tools/lib/hadoop-streaming-2.9.1.jar \
   spark-submit matmul-spark.py input-matmul output-matmul-spark
 
   ```
+- **Exécution des scripts Spark**
+
+Si vous le souhaitez, vous pouvez exécuter le script `run_scripts.sh` pour obtenir les résultats des trois exercices réalisés avec Spark. Les résultats seront enregistrés dans les dossiers suivants :
+
+- **Word Count** : `spark-output-word-count`
+- **Analyse Twitter** : `output/twitter-aggregates.txt`
+- **Produit Matriciel** : `output-matmul-spark`
+
+- Commande d'exécution
+
+Utilisez la commande suivante pour exécuter le script :
+
+```bash
+chmod +x run_scripts.sh
+./run_scripts.sh
+```
 
 ---
 
