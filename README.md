@@ -584,7 +584,15 @@ Utilisez la commande suivante pour exécuter le script :
 chmod +x run_scripts.sh
 ./run_scripts.sh
 ```
+## Exécution de tous les scripts
 
+Pour exécuter tous les scripts réalisés, vous pouvez utiliser le fichier `run_all.sh`. Avant de l'exécuter, assurez-vous de définir la variable d'environnement `JAVA_HOME`. Voici les commandes à utiliser :
+
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+chmod +x *.sh
+./run_all.sh
+```
 ---
 
 ### 3. Conclusion
